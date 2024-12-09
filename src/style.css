@@ -1,0 +1,46 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+.main-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-container .wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.main-container .wrapper .btn {
+  padding: 25px 30px;
+  border-radius: 8px;
+  transition: 0.3s all ease-in-out;
+}
+
+.main-container .wrapper .btn.create {
+  background-color: #ff0000;
+  color: #fff;
+}
+
+.main-container .wrapper .btn.create:hover {
+  background-color: #fff;
+  color: #ff0000;
+}
+
+.main-container .wrapper .btn.view {
+  background-color: #000;
+  color: #fff;
+}
+
+.main-container .wrapper .btn.view:hover {
+  background-color: #fff;
+  color: #000;
+}
