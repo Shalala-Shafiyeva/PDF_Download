@@ -1,12 +1,9 @@
-// import { CKEditor } from '@ckeditor/ckeditor5-react';
-// import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-
 import React, { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-function CreatePresentation() {
+function EditPresentation() {
   const [users, setUsers] = useState([]);
-  const [errors, setErrors] = useState([]);
+  const { id } = useParams();
   const navigate = useNavigate();
   const [values, setValues] = useState({
     title: "",
@@ -29,15 +26,34 @@ function CreatePresentation() {
     }
   }, []);
 
+  const handlePresentation = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:8000/api/presentation/show/" + id,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const result = await response.json();
+      setValues(result.data || {});
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     handleUsers();
+    handlePresentation();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await fetch(
-        "http://localhost:8000/api/presentation/create",
+        "http://localhost:8000/api/presentation/edit/" + id,
         {
           method: "POST",
           headers: {
@@ -48,28 +64,17 @@ function CreatePresentation() {
       );
       const result = await response.json();
       if (result.success) {
-        setErrors([]);
-        navigate("/");
-      } else {
-        setErrors(result.errors);
+        navigate("/view");
       }
     } catch (error) {
       console.log(error);
     }
   };
-
-  // const [editorData, setEditorData] = useState("");
-
-  // const handleEditorChange = (event, editor) => {
-  //   const data = editor.getData();
-  //   setEditorData(data); // Save the editor content
-  // };
-
   return (
     <div className="container-fluid mt-5 form">
-      <h3>Create new Presentation</h3>
+      <h3>Sənəd üzərində düzəliş</h3>
       <div className="row d-flex justify-content-center my-5">
-        <div className="col-5 border">
+        <div className="col-5 border rounded">
           <form
             method="POST"
             onSubmit={(e) => {
@@ -78,7 +83,7 @@ function CreatePresentation() {
             className="w-100 p-3 d-flex flex-column gap-4"
           >
             <div className="form-group d-flex flex-column gap-2 align-items-start">
-              <label htmlFor="sender">Sender:</label>
+              <label htmlFor="sender">Göndərən:</label>
               <select
                 className="form-control"
                 id="sender"
@@ -86,18 +91,18 @@ function CreatePresentation() {
                 onChange={(e) =>
                   setValues({ ...values, sender: e.target.value })
                 }
+                value={values.sender}
               >
-                <option value="">Choose sender</option>
+                <option value="">Göndərən şəxsi seçin</option>
                 {users?.map((user) => (
                   <option value={user.id} key={user.id}>
                     {user.name} {user.surname}
                   </option>
                 ))}
               </select>
-              {errors?.sender && <span >{errors.sender}</span>}
             </div>
             <div className="form-group d-flex flex-column gap-2 align-items-start">
-              <label htmlFor="sender">Receiver:</label>
+              <label htmlFor="sender">Alan:</label>
               <select
                 className="form-control"
                 id="reciever"
@@ -105,18 +110,18 @@ function CreatePresentation() {
                 onChange={(e) =>
                   setValues({ ...values, receiver: e.target.value })
                 }
+                value={values.receiver}
               >
-                <option value="">Choose receiver</option>
+                <option value="">Alan şəxsi seçin</option>
                 {users?.map((user) => (
                   <option value={user.id} key={user.id}>
                     {user.name} {user.surname}
                   </option>
                 ))}
               </select>
-              {errors?.receiver && <span>{errors.receiver}</span>}
             </div>
             <div className="form-group d-flex flex-column gap-2 align-items-start">
-              <label htmlFor="title">Title:</label>
+              <label htmlFor="title">Sənədin adı:</label>
               <input
                 type="text"
                 className="form-control"
@@ -128,10 +133,9 @@ function CreatePresentation() {
                 }
                 value={values.title}
               />
-              {errors?.title && <span>{errors.title}</span>}
             </div>
             <div className="form-group d-flex flex-column gap-2 align-items-start">
-              <label htmlFor="description">Content:</label>
+              <label htmlFor="description">Əsas Məzmun:</label>
               <textarea
                 className="form-control"
                 id="description"
@@ -141,19 +145,9 @@ function CreatePresentation() {
                 }
                 value={values.description}
               ></textarea>
-              {errors?.description && <span>{errors.description}</span>}
-              {/* <div>
-                <div>
-                  <CKEditor
-                    editor={ClassicEditor} 
-                    data={editorData} 
-                    onChange={handleEditorChange}
-                  />
-                </div>
-              </div> */}
             </div>
-            <button type="submit" className="btn btn-primary">
-              Submit
+            <button type="submit" className="btn btn-primary mt-5">
+              Dəyişdir
             </button>
           </form>
         </div>
@@ -162,4 +156,4 @@ function CreatePresentation() {
   );
 }
 
-export default CreatePresentation;
+export default EditPresentation;
